@@ -1,4 +1,4 @@
-﻿namespace Ryhor.Bot.Helpers
+﻿namespace Ryhor.Bot.Helpers.Constants
 {
     public static class Answers
     {
@@ -11,7 +11,7 @@
         {
             public const string WIFE = "I cherish you dearly, my guiding light and better half!";
             public const string OTHER = "Delighted to have you here!";
-            public const string INTRODUCTION = "I hope we can become friends if you wish to. \U0001F600";
+            public const string INTRODUCTION = "I hope we can become friends if you wish to. \u2764";
         }
 
 

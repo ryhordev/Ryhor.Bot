@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Ryhor.Bot.Helpers;
+using Ryhor.Bot.Helpers.Constants;
 using Ryhor.Bot.Services.Interfaces;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -84,13 +84,16 @@ namespace Ryhor.Bot.Services.Implementations
             if (update.Message is not { } message)
                 return;
 
+            var chatId = message.Chat.Id;
+            Console.WriteLine($"Received a '{message.Text}' message in chat: {chatId}.");
+
             var command = _commands.Keys.FirstOrDefault(c => c.Command == message.Text);
 
             if (command != null && _commands.TryGetValue(command, out var method))
                 await method(update.Message, botClient, cancellationToken);
             else
             {
-                await botClient.SendTextMessageAsync(message.Chat.Id,
+                await botClient.SendTextMessageAsync(chatId,
                  text: Answers.Common.COMMAND_IS_NOT_RECOGNIZED,
                  cancellationToken: cancellationToken);
             }

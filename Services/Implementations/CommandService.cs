@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Ryhor.Bot.Helpers;
+using Ryhor.Bot.Helpers.Constants;
 using Ryhor.Bot.Services.Interfaces;
 using System.Text;
 using Telegram.Bot;
@@ -19,7 +19,11 @@ namespace Ryhor.Bot.Services.Implementations
             _logger = loggerFactory.CreateLogger<CommandService>();
             _config = config;
 
-            _botCommands.Add(new BotCommand() { Command = "/start", Description = "Start communicate with a bot" }, StartComamndHandler);
+            _botCommands.Add(new BotCommand
+            {
+                Command = BotConstants.CommandRoute.START,
+                Description = BotConstants.CommandDescription.START
+            }, StartComamndHandler);
         }
 
         public Dictionary<BotCommand, Func<Message, ITelegramBotClient, CancellationToken, Task>> GetCommands()
@@ -29,9 +33,6 @@ namespace Ryhor.Bot.Services.Implementations
 
         private async Task StartComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
-            var chatId = message.Chat.Id;
-            Console.WriteLine($"Received a '{message.Text}' message in chat: {chatId}.");
-
             var sb = new StringBuilder();
             sb.AppendLine($"Hi, {message.Chat.FirstName}!");
 
@@ -43,10 +44,9 @@ namespace Ryhor.Bot.Services.Implementations
             sb.AppendLine(Answers.Greeting.INTRODUCTION);
 
             await botClient.SendTextMessageAsync(
-                chatId: chatId,
+                chatId: message.Chat.Id,
                 text: $"{sb}",
                 cancellationToken: cancellationToken);
         }
-
     }
 }

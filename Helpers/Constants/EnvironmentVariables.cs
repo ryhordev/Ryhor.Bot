@@ -1,4 +1,4 @@
-﻿namespace Ryhor.Bot.Helpers
+﻿namespace Ryhor.Bot.Helpers.Constants
 {
     public static class EnvironmentVariables
     {
