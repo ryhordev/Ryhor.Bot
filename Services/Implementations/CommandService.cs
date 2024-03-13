@@ -34,14 +34,12 @@ namespace Ryhor.Bot.Services.Implementations
         private async Task StartComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Hi, {message.Chat.FirstName}!");
+            sb.AppendLine(string.Format(Answers.Greeting.HI, message.Chat.FirstName));
 
             if (message.Chat.Username == _config[EnvironmentVariables.WIFE_NICK])
                 sb.AppendLine(Answers.Greeting.WIFE);
             else
                 sb.AppendLine(Answers.Greeting.OTHER);
-
-            sb.AppendLine(Answers.Greeting.INTRODUCTION);
 
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,

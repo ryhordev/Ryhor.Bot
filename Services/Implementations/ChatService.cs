@@ -84,8 +84,7 @@ namespace Ryhor.Bot.Services.Implementations
             if (update.Message is not { } message)
                 return;
 
-            var chatId = message.Chat.Id;
-            Console.WriteLine($"Received a '{message.Text}' message in chat: {chatId}.");
+            Console.WriteLine($"Received a '{message.Text}' message in chat with user: @{message.Chat.Username}");
 
             var command = _commands.Keys.FirstOrDefault(c => c.Command == message.Text);
 
@@ -93,7 +92,8 @@ namespace Ryhor.Bot.Services.Implementations
                 await method(update.Message, botClient, cancellationToken);
             else
             {
-                await botClient.SendTextMessageAsync(chatId,
+                await botClient.SendTextMessageAsync(
+                 chatId: message.Chat.Id,
                  text: Answers.Common.COMMAND_IS_NOT_RECOGNIZED,
                  cancellationToken: cancellationToken);
             }
