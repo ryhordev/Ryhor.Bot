@@ -36,15 +36,21 @@ namespace Ryhor.Bot.Services.Implementations
             var sb = new StringBuilder();
             sb.AppendLine(string.Format(Answers.Greeting.HI, message.Chat.FirstName));
 
-            if (message.Chat.Username == _config[EnvironmentVariables.WIFE_NICK])
+            var isWife = message.Chat.Username == _config[EnvironmentVariables.WIFE_NICK];
+
+            if (isWife)
                 sb.AppendLine(Answers.Greeting.WIFE);
-            else
-                sb.AppendLine(Answers.Greeting.OTHER);
 
             await botClient.SendTextMessageAsync(
                 chatId: message.Chat.Id,
                 text: $"{sb}",
                 cancellationToken: cancellationToken);
+
+            if (isWife)
+                await botClient.SendStickerAsync(
+                    chatId: message.Chat.Id,
+                    sticker: InputFile.FromFileId(_config["GREETING_STICKER"] ?? ""),
+                    cancellationToken: cancellationToken);
         }
     }
 }

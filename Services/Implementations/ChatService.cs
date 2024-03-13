@@ -85,8 +85,6 @@ namespace Ryhor.Bot.Services.Implementations
             if (update.Message is not { } message)
                 return;
 
-            Console.WriteLine($"Received a '{message.Text}' message in chat with user: @{message.Chat.Username}");
-
             var command = _commands.Keys.FirstOrDefault(c => c.Command == message.Text);
 
             if (command != null && _commands.TryGetValue(command, out var method))

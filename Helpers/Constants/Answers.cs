@@ -9,9 +9,8 @@
 
         public static class Greeting
         {
-            public const string HI = "Hi, {0}! \nDelighted to have you here!";
-            public const string WIFE = "I cherish you dearly, my guiding light and better half! \u2764";
-            public const string OTHER = "I hope we can become friends if you wish to. \u2764";
+            public const string HI = "Hi, {0}!\nDelighted to have you here! 🎉";
+            public const string WIFE = "I cherish you dearly, my guiding light and better half! ❤";
         }
     }
 }
