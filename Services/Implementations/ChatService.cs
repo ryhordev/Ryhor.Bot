@@ -28,6 +28,7 @@ namespace Ryhor.Bot.Services.Implementations
                 { UpdateType.Message, HandleMessageUpdate }
             };
         }
+
         public async Task ListenAsync()
         {
             try
