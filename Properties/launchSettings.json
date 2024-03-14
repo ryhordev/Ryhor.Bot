@@ -3,13 +3,13 @@
     "Ryhor.Bot": {
       "commandName": "Project",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "NETCORE_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
       "commandName": "Docker",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "NETCORE_ENVIRONMENT": "Development"
       }
     }
   }

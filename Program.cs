@@ -5,7 +5,7 @@ using Ryhor.Bot.Services.Implementations;
 using Ryhor.Bot.Services.Interfaces;
 
 var builder = Host.CreateDefaultBuilder(args)
-    .UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production")
+    .UseEnvironment(Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "Production")
     .ConfigureLogging(log => log.AddConsole())
     .ConfigureServices((hostContext, services) =>
     {

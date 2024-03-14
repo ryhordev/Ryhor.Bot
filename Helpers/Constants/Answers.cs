@@ -14,5 +14,10 @@
             public const string HI = "Hi, {0}!\nDelighted to have you here! 🎉";
             public const string WIFE = "I cherish you dearly, my guiding light and better half! ❤";
         }
+
+        public static class Benchmark
+        {
+            public const string ENTER_CODE = "Please send a method body to start benchmark";
+        }
     }
 }
