@@ -4,6 +4,7 @@
     {
         public static class Common
         {
+            public const string FORBIDDEN = "403 Forbidden";
             public const string COMMAND_IS_NOT_RECOGNIZED = "Apologies, I don't recognize this command. Please refer to the menu to view available commands.";
         }
 
