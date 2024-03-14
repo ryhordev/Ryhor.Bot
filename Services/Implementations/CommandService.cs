@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Ryhor.Bot.Entities;
+using Ryhor.Bot.Helpers;
 using Ryhor.Bot.Helpers.Constants;
 using Ryhor.Bot.Services.Interfaces;
 using System.Diagnostics;
@@ -7,7 +9,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using static System.Net.Mime.MediaTypeNames;
 using Telegram.Bot.Types.Enums;
 using File = System.IO.File;
 
@@ -17,27 +18,38 @@ namespace Ryhor.Bot.Services.Implementations
     {
         private readonly ILogger<CommandService> _logger;
         private readonly IConfiguration _config;
-        private readonly Dictionary<BotCommand, Func<Message, ITelegramBotClient, CancellationToken, Task>> _botCommands = [];
+        private readonly Dictionary<BotCommand, CommandDictionaryValue> _botCommands = [];
 
         public CommandService(ILoggerFactory loggerFactory, IConfiguration config)
         {
             _logger = loggerFactory.CreateLogger<CommandService>();
             _config = config;
 
-            _botCommands.Add(new BotCommand
-            {
-                Command = BotConstants.CommandRoute.START,
-                Description = BotConstants.CommandDescription.START
-            }, StartComamndHandler);
+            _botCommands.Add(
+                new BotCommand
+                {
+                    Command = BotConstants.CommandRoute.START,
+                    Description = BotConstants.CommandDescription.START
+                },
+                new CommandDictionaryValue
+                {
+                    CommandMethod = StartComamndHandler
+                });
 
-            _botCommands.Add(new BotCommand
-            {
-                Command = "/benchmark",
-                Description = "Test"
-            }, BenchMarkComamndHandler);
+            _botCommands.Add(
+                new BotCommand
+                {
+                    Command = "/benchmark",
+                    Description = "Test"
+                },
+                new CommandDictionaryValue
+                {
+                    CommandMethod = BenchMarkComamndHandler,
+                    AnswerMethod = BenchMarkAnswerComamndHandler
+                });
         }
 
-        public Dictionary<BotCommand, Func<Message, ITelegramBotClient, CancellationToken, Task>> GetCommands()
+        public Dictionary<BotCommand, CommandDictionaryValue> GetCommands()
         {
             return _botCommands;
         }
@@ -66,19 +78,23 @@ namespace Ryhor.Bot.Services.Implementations
 
         private async Task BenchMarkComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
-            if (_botCommands.Keys.Any(c => c.Command == message.Text))
-            {
-                await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                text: "Please send a code to start benchmark",
-                cancellationToken: cancellationToken);
-            }
-            else
-            {
-                string tempDirectory = Path.Combine(Path.GetTempPath(), "RYHORBOT", Guid.NewGuid().ToString());
-                Directory.CreateDirectory(tempDirectory);
+            await botClient.SendTextMessageAsync(
+               chatId: message.Chat.Id,
+               text: "Please send a code to start benchmark",
+               cancellationToken: cancellationToken);
+        }
 
-                string modifiedCode = $@"
+        private async Task BenchMarkAnswerComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
+        {
+            await botClient.SendTextMessageAsync(
+                                chatId: message.Chat.Id,
+                                text: Answers.Common.ANSWER_GENERETING,
+                                cancellationToken: cancellationToken);
+
+            string tempDirectory = Path.Combine(Path.GetTempPath(), "RYHORBOT", Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempDirectory);
+
+            string modifiedCode = $@"
 using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
@@ -114,12 +130,12 @@ public class Program
     }}
 }}";
 
-                string filePath = Path.Combine(tempDirectory, "UserBenchmark.cs");
-                await File.WriteAllTextAsync(filePath, modifiedCode, cancellationToken);
+            string filePath = Path.Combine(tempDirectory, "UserBenchmark.cs");
+            await File.WriteAllTextAsync(filePath, modifiedCode, cancellationToken);
 
-                // Create a new project file that includes BenchmarkDotNet as a dependency
-                string projectFilePath = Path.Combine(tempDirectory, "UserBenchmark.csproj");
-                string projectFileContent = $@"
+            // Create a new project file that includes BenchmarkDotNet as a dependency
+            string projectFilePath = Path.Combine(tempDirectory, "UserBenchmark.csproj");
+            string projectFileContent = $@"
 <Project Sdk=""Microsoft.NET.Sdk"">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -130,49 +146,49 @@ public class Program
     </ItemGroup>
 </Project>";
 
-                await File.WriteAllTextAsync(projectFilePath, projectFileContent, cancellationToken);
+            await File.WriteAllTextAsync(projectFilePath, projectFileContent, cancellationToken);
 
-
-                var process = new Process
-                {
-                    StartInfo =
+            var process = new Process
+            {
+                StartInfo =
                     {
                         FileName = "dotnet",
                         Arguments = $"run --project {projectFilePath} --configuration Release",
-                        WorkingDirectory = tempDirectory, 
+                        WorkingDirectory = tempDirectory,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
                         UseShellExecute = false
                     }
-                };
+            };
 
-                process.Start();
+            process.Start();
 
 
-                string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-                string error = await process.StandardError.ReadToEndAsync(cancellationToken);
+            string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+            string error = await process.StandardError.ReadToEndAsync(cancellationToken);
 
-                process.WaitForExit();
+            process.WaitForExit();
 
-                var match = Regex.Match(output, @"\| Method\s+\| Mean\s+\| Error\s+\| StdDev\s+\|[\s\S]*");
+            var match = Regex.Match(output, @"\| Method\s+\| Mean\s+\| Error\s+\| StdDev\s+\|[\s\S]*");
 
-                if (match.Success)
-                    output = $"```\n{match.Value}\n```";
+            if (match.Success)
+                output = $"```\n{match.Value}\n```";
 
-                Directory.Delete(tempDirectory, true);
+            Directory.Delete(tempDirectory, true);
 
+            if (!string.IsNullOrWhiteSpace(output) && string.IsNullOrWhiteSpace(error))
                 await botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: output,
+                    text: output.ReplaceTgCharacters(),
                     parseMode: ParseMode.MarkdownV2,
                     cancellationToken: cancellationToken);
 
-                if (!string.IsNullOrWhiteSpace(error))
-                    await botClient.SendTextMessageAsync(
-                    chatId: message.Chat.Id,
-                    text: $"Error: {error}",
-                    cancellationToken: cancellationToken);
-            }
+            if (!string.IsNullOrWhiteSpace(error))
+                await botClient.SendTextMessageAsync(
+                chatId: message.Chat.Id,
+                parseMode: ParseMode.MarkdownV2,
+                text: $"Error: {error.ReplaceTgCharacters()}",
+                cancellationToken: cancellationToken);
         }
     }
 }
