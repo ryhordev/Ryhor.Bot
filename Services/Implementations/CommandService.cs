@@ -155,7 +155,7 @@ namespace Ryhor.Bot.Services.Implementations
             else
             {
                 process.Kill();
-
+                Directory.Delete(tempDirectory, true);
                 await botClient.SendTextMessageAsync(
                         chatId: message.Chat.Id,
                         text: string.Format(Answers.Benchmark.STOPPED_PROCESS, BotConstants.Benchmark.TIME_FOR_EXECUTION),
