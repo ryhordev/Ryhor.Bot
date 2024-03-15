@@ -27,8 +27,8 @@ namespace Ryhor.Bot.Services.Implementations
             _botCommands.Add(
                 new BotCommand
                 {
-                    Command = BotConstants.CommandRoute.START,
-                    Description = BotConstants.CommandDescription.START
+                    Command = BotConstants.Command.Route.START,
+                    Description = BotConstants.Command.Description.START
                 },
                 new CommandDictionaryValue
                 {
@@ -38,8 +38,8 @@ namespace Ryhor.Bot.Services.Implementations
             _botCommands.Add(
                 new BotCommand
                 {
-                    Command = BotConstants.CommandRoute.BENCHMARK,
-                    Description = BotConstants.CommandDescription.BENCHMARK
+                    Command = BotConstants.Command.Route.BENCHMARK,
+                    Description = BotConstants.Command.Description.BENCHMARK
                 },
                 new CommandDictionaryValue
                 {

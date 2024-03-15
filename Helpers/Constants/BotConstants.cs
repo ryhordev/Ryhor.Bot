@@ -2,16 +2,19 @@
 {
     public static class BotConstants
     {
-        public static class CommandRoute
+        public static class Command
         {
-            public const string START = "/start";
-            public const string BENCHMARK = "/benchmark";
-        }
-
-        public static class CommandDescription
-        {
-            public const string START = "Begin a conversation with a bot";
-            public const string BENCHMARK = "Conduct benchmark testing on your code";
+            public static class Route
+            {
+                public const string START = "/start";
+                public const string BENCHMARK = "/benchmark";
+            }
+            public static class Description
+            {
+                public const string START = "Begin a conversation with a bot";
+                public const string BENCHMARK = "Conduct benchmark testing on your code";
+            }
+            
         }
 
         public static class Benchmark
@@ -69,3 +72,4 @@ public class Program
         }
     }
 }
+
