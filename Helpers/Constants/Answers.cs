@@ -6,7 +6,6 @@
         {
             public const string FORBIDDEN = "403 Forbidden 😱";
             public const string ANSWER_GENERETING = "An answer is generating. \nPlease be patient 😇 It can take a while.";
-            public const string COMMAND_IS_NOT_RECOGNIZED = "Apologies, I don't recognize this command. 😔 \nPlease refer to the menu to view available commands.";
         }
 
         public static class Greeting

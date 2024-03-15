@@ -52,7 +52,6 @@ namespace Ryhor.Bot.Services.Implementations
         {
             return _botCommands;
         }
-
         private async Task StartComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
             var sb = new StringBuilder();
@@ -74,7 +73,6 @@ namespace Ryhor.Bot.Services.Implementations
                     sticker: InputFile.FromFileId(_config["GREETING_STICKER"] ?? ""),
                     cancellationToken: cancellationToken);
         }
-
         private async Task BenchMarkComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
             await botClient.SendTextMessageAsync(
@@ -82,7 +80,6 @@ namespace Ryhor.Bot.Services.Implementations
                text: Answers.Benchmark.ENTER_CODE,
                cancellationToken: cancellationToken);
         }
-
         private async Task BenchMarkAnswerComamndHandler(Message message, ITelegramBotClient botClient, CancellationToken cancellationToken)
         {
             await botClient.SendTextMessageAsync(

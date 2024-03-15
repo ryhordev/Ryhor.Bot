@@ -136,7 +136,10 @@ namespace Ryhor.Bot.Services.Implementations
                 var value = _commands[prevComamnd];
 
                 if (value.AnswerMethod != null)
+                {
                     await value.AnswerMethod(message, botClient, cancellationToken);
+                    _chatHistory.Remove(chatId);
+                }
 
                 return;
             }
