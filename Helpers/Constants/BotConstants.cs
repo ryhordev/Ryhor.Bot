@@ -16,6 +16,7 @@
 
         public static class Benchmark
         {
+            public const int TIME_FOR_EXECUTION = 2;
             public const string NO_LOGGER = "No loggers defined, you will not see any progress!";
             public const string FOLDER = "RYHORBOT";
             public const string PROJECT_NAME = "UserBenchmark.csproj";

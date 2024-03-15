@@ -4,9 +4,9 @@
     {
         public static class Common
         {
-            public const string FORBIDDEN = "403 Forbidden";
-            public const string ANSWER_GENERETING = "An answer is generating. Please be patient; it can take a while.";
-            public const string COMMAND_IS_NOT_RECOGNIZED = "Apologies, I don't recognize this command. Please refer to the menu to view available commands.";
+            public const string FORBIDDEN = "403 Forbidden 😱";
+            public const string ANSWER_GENERETING = "An answer is generating. \nPlease be patient 😇 It can take a while.";
+            public const string COMMAND_IS_NOT_RECOGNIZED = "Apologies, I don't recognize this command. 😔 \nPlease refer to the menu to view available commands.";
         }
 
         public static class Greeting
@@ -17,7 +17,8 @@
 
         public static class Benchmark
         {
-            public const string ENTER_CODE = "Please send a method body to start benchmark";
+            public const string ENTER_CODE = "Please send a method body to start benchmark 🧑‍💻";
+            public const string STOPPED_PROCESS = "The process has been stopped after {0} minutes due to excessive body size, or the method may be infinite. 😔 \nPlease try again with another method.";
         }
     }
 }

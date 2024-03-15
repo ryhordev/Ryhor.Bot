@@ -117,30 +117,51 @@ namespace Ryhor.Bot.Services.Implementations
 
             process.Start();
 
-            string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
-            string error = await process.StandardError.ReadToEndAsync(cancellationToken);
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromMinutes(BotConstants.Benchmark.TIME_FOR_EXECUTION));
 
-            process.WaitForExit();
+            var processTask = process.WaitForExitAsync(cancellationToken);
+            var timeoutTask = Task.Delay(-1, cancellationTokenSource.Token);
 
-            output = $"```\n{output.Replace(BotConstants.Benchmark.NO_LOGGER, "").Trim()}\n```";
+            var completedTask = await Task.WhenAny(processTask, timeoutTask);
 
-            Directory.Delete(tempDirectory, true);
+            if (completedTask == processTask)
+            {
+                string output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+                string error = await process.StandardError.ReadToEndAsync(cancellationToken);
 
-            if (!string.IsNullOrWhiteSpace(output) && string.IsNullOrWhiteSpace(error))
-                await botClient.SendTextMessageAsync(
+                process.WaitForExit();
+
+                output = output.Replace(BotConstants.Benchmark.NO_LOGGER, "").Trim();
+
+                Directory.Delete(tempDirectory, true);
+
+                if (!string.IsNullOrWhiteSpace(output) && string.IsNullOrWhiteSpace(error))
+                    await botClient.SendTextMessageAsync(
+                        chatId: message.Chat.Id,
+                        text: $"```\n{output.ReplaceTgCharacters()}\n```",
+                        replyToMessageId: message.MessageId,
+                        parseMode: ParseMode.MarkdownV2,
+                        cancellationToken: cancellationToken);
+
+                if (!string.IsNullOrWhiteSpace(error))
+                    await botClient.SendTextMessageAsync(
                     chatId: message.Chat.Id,
-                    text: output,
                     replyToMessageId: message.MessageId,
                     parseMode: ParseMode.MarkdownV2,
+                    text: $"Error: {error.ReplaceTgCharacters()}",
                     cancellationToken: cancellationToken);
+            }
+            else
+            {
+                process.Kill();
 
-            if (!string.IsNullOrWhiteSpace(error))
                 await botClient.SendTextMessageAsync(
-                chatId: message.Chat.Id,
-                replyToMessageId: message.MessageId,
-                parseMode: ParseMode.MarkdownV2,
-                text: $"Error: {error.ReplaceTgCharacters()}",
-                cancellationToken: cancellationToken);
+                        chatId: message.Chat.Id,
+                        text: string.Format(Answers.Benchmark.STOPPED_PROCESS, BotConstants.Benchmark.TIME_FOR_EXECUTION),
+                        replyToMessageId: message.MessageId,
+                        cancellationToken: cancellationToken);
+            }
         }
     }
 }
